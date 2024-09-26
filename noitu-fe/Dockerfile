@@ -9,10 +9,10 @@ RUN yarn build
 FROM node:20-alpine as runner
 WORKDIR /usr/src/app
 ENV NODE_ENV production
+ENV PORT 3002
 COPY --from=builder /usr/src/app/next.config.mjs ./
 COPY --from=builder /usr/src/app/.next/standalone ./
 COPY --from=builder /usr/src/app/.next/static ./.next/static
 # COPY --from=builder /usr/src/app/.env.local ./.env.local
 
-EXPOSE 4001
 CMD ["node", "server.js"]

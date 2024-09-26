@@ -9,6 +9,7 @@ FROM alpine:latest
 WORKDIR /
 COPY --from=builder /app/server /app/server
 COPY --from=builder /app/config.yaml /config.yaml
+COPY --from=builder /app/words.txt /words.txt
 
 EXPOSE 8081
 CMD ["/app/server"]

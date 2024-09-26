@@ -47,40 +47,17 @@ export default function Home() {
   };
 
   const components = {
-    [GameState.NONE]: (
+    [GameState.NONE]: <></>,
+    [GameState.QUEUEING]: (
       <>
-        <p className="text-center text-gray-600 mb-6">
-          Chào mừng bạn đến với trò chơi Nối từ! Hãy nhập tên của bạn và bắt đầu
-          chơi.
-        </p>
-        <div className="space-y-4">
-          <Input
-            type="text"
-            placeholder="Nhập tên của bạn"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full"
-          />
-          <Button
-            onClick={handleStart}
-            className="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded"
-            disabled={!username.trim()}
-          >
-            Bắt đầu chơi
-          </Button>
-        </div>
+        <div>chờ chút</div>
       </>
     ),
-    [GameState.QUEUEING]: 
-    <>
-      <div>
-         chờ chút 
-      </div>
-    </>,
-    [GameState.PLAYING]:
-    <>
-      <div> từ của bạn là : {test?.msg}</div>
-    </>,
+    [GameState.PLAYING]: (
+      <>
+        <div> từ của bạn là : {test?.msg}</div>
+      </>
+    ),
     [GameState.ENDING]: <></>,
   };
 
@@ -91,27 +68,51 @@ export default function Home() {
           Nối từ
         </h1>
         {/* {components[gameState]} */}
-        <>
-          <p className="text-center text-gray-600 mb-6">
-            Từ của bạn là {test?.msg}
-          </p>
-          <div className="space-y-4">
-            <Input
-              type="text"
-              placeholder="Nhập tên của bạn"
-              value={word}
-              onChange={(e) => setWord(e.target.value)}
-              className="w-full"
-            />
-            <Button
-              onClick={handleSendMessage}
-              className="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded"
-              disabled={!username.trim()}
-            >
-              Nhập
-            </Button>
-          </div>
-        </>
+        {test?.isPlaying ? (
+          <>
+            <p className="text-center text-gray-600 mb-6">
+              Từ của bạn là {test?.msg}
+            </p>
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Nhập tên của bạn"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+                className="w-full"
+              />
+              <Button
+                onClick={handleSendMessage}
+                className="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                Nhập
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-center text-gray-600 mb-6">
+              Chào mừng bạn đến với trò chơi Nối từ! Hãy nhập tên của bạn và bắt
+              đầu chơi.
+            </p>
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Nhập tên của bạn"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full"
+              />
+              <Button
+                onClick={handleStart}
+                className="w-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-4 rounded"
+                disabled={!username.trim()}
+              >
+                Bắt đầu chơi
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -107,6 +107,7 @@ func (d *Duel) EndGame() {
 	}
 
 	close(d.quit)
+	slog.Info("a game closed")
 	go d.handleEndGameOptions(d.User1)
 	go d.handleEndGameOptions(d.User2)
 
