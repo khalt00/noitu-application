@@ -126,6 +126,7 @@ func (d *Duel) handleEndGameOptions(user *Client) {
 			Message:   "Thanks for playing!",
 			IsPlaying: false,
 		}
+		user.Hub.Unregister <- user
 		return
 	}
 }

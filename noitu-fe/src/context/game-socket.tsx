@@ -48,7 +48,7 @@ export const useGameWebsocket = () => {
   const isConnected = ws !== undefined;
 
   const testJoin = (username: string, category: string) => {
-    const url = `ws://localhost:8081/ws?username=${username}&category=${category}`;
+    const url = `${process.env.NEXT_PUBLIC_WS_URL}?username=${username}&category=${category}`;
     const ws = new WebSocket(url);
 
     ws.addEventListener("close", () => {
