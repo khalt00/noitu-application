@@ -71,7 +71,6 @@ export const useGameWebsocket = () => {
     onMessage: (message: ResponseMessage) => void
   ) => {
     if (ws) {
-      console.log("go here?")
       ws.addEventListener("message", (ev) => {
         try {
           onMessage(JSON.parse(ev.data));

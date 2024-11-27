@@ -22,7 +22,6 @@ func NewHub(gm *GameManager) *Hub {
 		Register:    make(chan *Client),
 		Unregister:  make(chan *Client),
 		GameManager: gm,
-		// Message:    make(chan *ClientMessage),
 	}
 }
 
@@ -34,25 +33,11 @@ func (h *Hub) Run() {
 			h.Clients[client] = true
 			h.mu.Unlock()
 		case client := <-h.Unregister:
+			h.mu.Lock()
 			if _, ok := h.Clients[client]; ok {
 				delete(h.Clients, client)
-				close(client.Req)
-				close(client.Resp)
 			}
-			// case message := <-h.Message:
-			// switch message.Category {
-			// case DuelGame:
-			// 	slog.Info("user one v one")
-			// 	if len(h.Queueing) > 0 {
-			// 		opponent := h.Queueing[0]   // first user go to Queue
-			// 		h.Queueing = h.Queueing[1:] // remove opponent
-			// 		// TODO: GameStarted
-			// 		duel := NewDuel(message.Client, opponent)
-			// 		go duel.Start()
-			// 	} else {
-			// 		h.Queueing = append(h.Queueing, message.Client)
-			// 	}
-			// }
+			h.mu.Unlock()
 		}
 	}
 }

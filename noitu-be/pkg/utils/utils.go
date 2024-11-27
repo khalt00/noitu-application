@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/khalt00/noitu/internal/dict"
@@ -17,8 +16,6 @@ func CombineString(rest ...string) string {
 // Ex: ăn bám => return bám
 func GetFirstConnectWord(word string) string {
 	temp := strings.Fields(word)
-	fmt.Println(temp)
-
 	if len(temp) == 0 {
 		return ""
 	}

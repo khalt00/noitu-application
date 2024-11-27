@@ -11,8 +11,11 @@ const (
 type GameState string
 
 const (
-	Playing  GameState = "Playing"
-	Queueing GameState = "Queueing"
+	NONE                 GameState = "NONE"
+	QUEUEING             GameState = "QUEUEING"
+	PLAYING              GameState = "PLAYING"
+	WAIT_FOR_ANOTHERUSER GameState = "WAITING"
+	ENDING               GameState = "ENDING"
 )
 
 type ClientMessage struct {
@@ -28,10 +31,10 @@ type User struct {
 }
 
 type ResponseMessage struct {
-	Message   string      `json:"msg"`
-	IsPlaying bool        `json:"isPlaying"`
-	GameOver  bool        `json:"gameOver"`
-	Data      interface{} `json:"data"`
+	Message     string    `json:"msg"`
+	CurrentWord string    `json:"currentWord"`
+	State       GameState `json:"state"`
+	Score       uint64    `json:"score"`
 }
 
 type EndGameOptions string

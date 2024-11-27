@@ -43,7 +43,6 @@ type RegisterStruct struct {
 }
 
 func (c *gameController) Register(ctx *gin.Context) {
-
 	var req RegisterStruct
 	if err := ctx.ShouldBind(&req); err != nil {
 		slog.Error("invalid req", "ERR", err)

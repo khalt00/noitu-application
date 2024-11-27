@@ -1,41 +1,27 @@
 package ws
 
 import (
+	"errors"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"golang.org/x/exp/slog"
-)
 
-const (
-	// Time allowed to write a message to the peer.
-	writeWait = 10 * time.Second
-
-	// Time allowed to read the next pong message from the peer.
-	pongWait = 60 * time.Second
-
-	// Send pings to peer with this period. Must be less than pongWait.
-	pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	maxMessageSize = 512
+	"log/slog"
 )
 
 type Client struct {
-	Hub *Hub
-
-	Conn *websocket.Conn
-
+	Hub       *Hub
+	Conn      *websocket.Conn
 	Resp      chan *ResponseMessage
 	Req       chan *ClientMessage
 	UserState User
+
+	quitOnce sync.Once
 }
 
 func (c *Client) ReadMessage() {
-	defer func() {
-		c.Hub.Unregister <- c
-		c.Conn.Close()
-	}()
+	defer c.Quit()
 	for {
 		var message ClientMessage
 		err := c.Conn.ReadJSON(&message)
@@ -46,15 +32,17 @@ func (c *Client) ReadMessage() {
 			slog.Error("Err", slog.Any("err:", err))
 			break
 		}
-		slog.Info("message", slog.Any("message", message))
-		c.Req <- &message
+		select {
+		case c.Req <- &message:
+			slog.Info("Message received and sent to Req", c.UserState.Username, slog.Any("message", message))
+		case <-time.After(2 * time.Second): // Timeout if Req isn't consumed
+			slog.Warn("Dropping message due to timeout", slog.Any("message", message))
+		}
 	}
 }
 
 func (c *Client) WriteMessage() {
-	defer func() {
-		c.Hub.Unregister <- c
-	}()
+	defer c.Quit()
 	for {
 		message, ok := <-c.Resp
 		if !ok {
@@ -62,4 +50,40 @@ func (c *Client) WriteMessage() {
 		}
 		c.Conn.WriteJSON(message)
 	}
+}
+
+func (c *Client) Quit() {
+	c.quitOnce.Do(func() {
+		// Unregister client from the hub
+		c.Hub.Unregister <- c
+		// Close the WebSocket connection
+		c.Conn.Close()
+		// Close request and response channels
+		close(c.Req)
+		close(c.Resp)
+	})
+}
+
+func (c *Client) ReceiveMessage(msg *ResponseMessage) error {
+	if c == nil {
+		slog.Error("Client does not exists", "Err", nil)
+		return errors.New("client does not exists")
+	}
+	if msg == nil {
+		slog.Error("Received nil message", "Username", c.UserState.Username)
+		return errors.New("invalid nil message")
+	}
+	if c.Resp == nil {
+		slog.Error("Response channel is nil", "Username", c.UserState.Username)
+		return errors.New("nil response")
+	}
+	msg.Score = c.UserState.Score
+	select {
+	case c.Resp <- msg:
+		// Message sent successfully
+	default:
+		slog.Warn("Response channel is full, message dropped", "Username", c.UserState.Username)
+	}
+
+	return nil
 }

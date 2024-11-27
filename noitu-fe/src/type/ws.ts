@@ -1,7 +1,15 @@
 export interface ResponseMessage {
   msg: string;
-  isPlaying: boolean;
+  currentWord: string;
+  state: STATE;
   score: number;
-  streak: number;
-  data: any;
+}
+
+
+export enum STATE{
+  NONE = "NONE",
+	QUEUEING = "QUEUEING",
+	PLAYING  = "PLAYING",
+  WAITING = "WAITING",
+	ENDING = "ENDING",
 }
