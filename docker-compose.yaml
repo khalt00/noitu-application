@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  noitu-be:
+    build:
+      context: ./noitu-be
+      dockerfile: Dockerfile # Ensure you have a Dockerfile in the noitu-be directory
+    ports:
+      - "8081:8081"
+  noitu-fe:
+    build:
+      context: ./noitu-fe
+      dockerfile: Dockerfile # Ensure you have a Dockerfile in the noitu-fe directory
+    ports:
+      - "3002:3002"
+
+networks:
+  default:
+    driver: bridge
